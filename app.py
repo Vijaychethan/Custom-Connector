@@ -5,7 +5,7 @@ app = Flask(__name__)
 
 @app.route("/")
 def home():
-    return jsonify({"message":"File Validation API"})
+    return jsonify({"message":"File Validation API - TrueType Validator"})
 
 @app.route("/validate", methods=["POST"])
 def validate():
