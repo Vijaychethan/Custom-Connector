@@ -1,0 +1,29 @@
+swagger: "2.0"
+info:
+  title: TrueType Validator
+  version: "1.0"
+
+host: truetype-validator.onrender.com
+basePath: /
+schemes:
+  - https
+
+consumes:
+  - multipart/form-data
+
+produces:
+  - application/json
+
+paths:
+  /validate:
+    post:
+      operationId: ValidateFile
+      summary: Validate uploaded file
+      parameters:
+        - name: file
+          in: formData
+          type: file
+          required: true
+      responses:
+        200:
+          description: Success

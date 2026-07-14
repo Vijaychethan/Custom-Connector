@@ -9,33 +9,39 @@ def home():
 
 @app.route("/validate", methods=["POST"])
 def validate():
+    try:
+        if "file" not in request.files:
+            return jsonify({
+                "success": False,
+                "message": "No file uploaded"
+            }), 400
 
-    if "file" not in request.files:
+        file = request.files["file"]
+
+        file.stream.seek(0)
+        from_stream = puremagic.from_stream(file.stream)
+
+        file.stream.seek(0)
+        magic_stream = puremagic.magic_stream(file.stream)
+
+        return jsonify({
+            "success": True,
+            "filename": file.filename,
+            "from_stream": from_stream,
+            "matches": [
+                {
+                    "extension": m.extension,
+                    "confidence": m.confidence
+                }
+                for m in magic_stream
+            ]
+        })
+
+    except Exception as ex:
         return jsonify({
             "success": False,
-            "message": "No file uploaded"
-        }), 400
-
-    file = request.files["file"]
-
-    file.stream.seek(0)
-    from_stream = puremagic.from_stream(file.stream)
-
-    file.stream.seek(0)
-    magic_stream = puremagic.magic_stream(file.stream)
-
-    return jsonify({
-        "success": True,
-        "filename": file.filename,
-        "from_stream": from_stream,
-        "matches": [
-            {
-                "extension": m.extension,
-                "confidence": m.confidence
-            }
-            for m in magic_stream
-        ]
-    })
+            "message": str(ex)
+        }), 500
 
 if __name__ == "__main__":
     app.run(debug=True)
